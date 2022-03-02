@@ -64,23 +64,28 @@ vsir_model <- function(time,state,parameters){
     }
     
     
+    ## calculate the amount of doses that have been used to vaccinate the population. when you reach the limit, set vaccination rate to zero
+    
+    # doesnt work because the ode function really doesn't like the rapid change in rate parameters
+    
     # this expression isn't great bc it will assume that people who are initially dosed
     # in your parameters got their doses from the supply you want to start applying
     # but for our question (what's the best thing to do w/ 0 people vaxxed), this should work fine
-    # also it'll go over the amount of doses you actually have for one iteration. not great
-    # this also makes the ode really slow and increases maxsteps somehow. man this code sucks
-    
-    doses_left = doses - (Vj1 + 2*Vj2 + 3*Vj3)*population 
-    doses = doses_left
-    
-    if (doses_left <= 1){
-      rj1 = 0
-      rj2 = 0
-      rj3 = 0
-      rj2t = 0 
-      rj3t = 0
-    }
+    # also it could go over the amount of doses you actually have for one iteration. not great
 
+    
+   # doses_left = doses - (Vj1 + 2*Vj2 + 3*Vj3)*population 
+   # doses = doses_left
+    
+   # if (doses_left <= 1){
+    #  rj1 = 0
+    #  rj2 = 0
+    #  rj3 = 0
+    #  rj2t = 0 
+    #  rj3t = 0
+   # }
+
+    
     # change in vaccinated compartment
     dV1 = (1-ea1)*(rj1)*S - (aj1 + u)*Vj1 - el1*beta*I*Vj1 - (1-ea2)*rj2*Vj1
     dV2 = (1-ea2)*(rj2)*Vj1 - (aj2 + u)*Vj2 - el2*beta*I*Vj2 - (1-ea3)*rj3*Vj2
@@ -121,5 +126,5 @@ ggplot(data = out_long,
   geom_line() +xlab('Time (days') + ylab('Propotion of the population') + scale_color_discrete(name="State")
 
 
-output$doses_used <- (output$Vj1 + 2*output$Vj2 + 3*output$Vj3)*population 
-
+output$doses_used <- (output$Vj1 + 2*output$Vj2 + 3*output$Vj3)*population # calculate how many doses have been used at any given step
+output$N <- output$Vj1 + output$Vj2 + output$Vj3 + output$S + output$I + output$R # math sanity check -- just to make sure total population proportion is always 1
